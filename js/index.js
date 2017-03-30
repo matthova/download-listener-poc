@@ -4,17 +4,20 @@ var url = "http://lf.fusion360.io/api/limbforge?parameters=%7B%22component%22%3A
 function fetchUrl() {
   fetch(url, {method: 'get'})
   .then(res => res.blob())
-  .then(blob => saveAs(blob, "filename.zip"));
+  .then((blob) => {
+    console.log('All done, Fetch');
+    saveAs(blob, "filename.zip")
+  });
 }
 
 function vanillaJs() {
   var xhr = new XMLHttpRequest();
   xhr.open('GET', url, true);
   xhr.responseType = "blob";
-  xhr.withCredentials = true;
   xhr.onreadystatechange = function (){
     if (xhr.readyState === 4) {
       var blob = xhr.response;
+      console.log('All done, VanillaJS');
       saveAs(blob, "filename.zip");
     }
   };
@@ -26,10 +29,12 @@ function ajaxDownload() {
     type: "GET",
     url: url,
     cache: false,
-    contentType: "jsonp",
+    // contentType: "jsonp",
+    crossDomain: true,
     success: (data) => {
       var byteArray = (data);
       var blob = new Blob([byteArray], { type: "application/octet-stream" });
+      console.log('All done, AJAX');
       saveAs(blob, "filename.zip");
     }
   });
@@ -37,6 +42,6 @@ function ajaxDownload() {
 
 $(document).on('ready', function() {
   $("#our-button").click(fetchUrl);
-  // $("#our-button").click(vanillaJs);
-  // $("#our-button").click(ajaxDownload);
+  $("#our-button").click(vanillaJs);
+  $("#our-button").click(ajaxDownload);
 });
